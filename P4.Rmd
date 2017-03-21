@@ -1,0 +1,805 @@
+Canadian Air Pollutant Emmision Inventory by Jenny Lu
+========================================================
+## Introduction
+The Air Pollutant Emission Inventory (APEI) is an annual report of air pollutant emissions across Canada published by Environment and Climate Change Canada. The report details the release of air pollutants from all known of sources since 1990. The APEI serves many purposes, including:  
+
+* supporting the development of air quality management strategies, policies and regulations  
+* fulfilling Canada's domestic and international reporting obligation
+* informing Canadians about pollutants that affect their health and the environment  
+* providing data to support air quality forecasting. 
+
+
+Emissions data is available for the following 17 air pollutants for the years 1990-2014: 
+
+* Criteria air contaminants (CACs):
+    + Total particulate matter (TPM) with upper size limit of ~100 microns in aerodynamic equivalent diameter
+    + Particulate matter less than or equal to 10 microns (PM10)
+    + Particulate matter less than or equal to 2.5 microns (PM2.5)
+    + Sulphur oxides (SOx) 
+    + Nitrogen oxides (NOx) 
+    + Volatile organic compounds (VOCs) 
+    + Carbon monoxide (CO) 
+    + Ammonia (NH3) 
+* Heavy metals: 
+    + Mercury (Hg) 
+    + Lead (Pb) 
+* Cadmium (Cd) Persistent organic pollutants (POPs): 
+    + Dioxins and furans (D/F) 
+    + Four polycyclic aromatic hydrocarbons (PAHs) compounds (Benzo[a]pyrene, Benzo[b]fluoranthene, Benzo[k]fluoranthene and Indeno[1,2,3-cd]pyrene) 
+    + Hexachlorobenzene (HCB) 
+    
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r packages}
+# Load all of the packages that you end up using
+# in your analysis in this code chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk.
+# This prevents the code from displaying in the knitted HTML output.
+# You should set echo=FALSE for all code chunks in your file.
+library(knitr)
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(reshape2)
+```
+
+```{r Load_the_Data}
+# Load the Data
+setwd("C:/Users/Jenny/Documents/1. Data Analyst/P4/Project")
+#All combined
+apei <- read.csv("Master.csv", sep = ",")
+```
+
+## Univariate Plots
+
+```{r Summary of Data}
+pollutants <- c("TPM", "PM10", "PM2.5", "SOX", "NOX", "VOC", "CO", "NH3",
+                "Pb", "Cd", "Hg", "D.F", "HCB", "PAH")
+pm <- c("TPM", "PM10", "PM2.5")
+cacs <- c("SOX", "NOX", "VOC", "CO", "NH3")
+hvymetal <- c("Pb", "Cd", "Hg")
+pops <- c("D.F", "HCB", "PAH")
+```
+
+Summary statistics for all 14 pollutants:
+```{r}
+summary(apei[,pollutants])
+```
+
+
+```{r PM_Histograms, fig.height=10}
+canada <- subset(apei, Region == "Canada" & 
+                   Subsector == 'all subsectors')[,c("Year", 
+                                                     "Source", "Sector",
+                                                     pollutants)]
+
+can <- subset(apei, Region == "Canada" & 
+                Subsector != "all subsectors")[,pollutants]
+
+#Particulate matter
+p1 <- ggplot(melt(can[,pm]),aes(x=value/1e6)) + 
+  geom_histogram(binwidth=0.5, colour="black", fill="white") + 
+  facet_wrap(~variable) +
+  xlab("Emissions in million tonnes (Tg)")
+
+p2 <- ggplot(melt(can[,pm]),aes(x=value/1e6)) + 
+  geom_histogram(binwidth=0.5, colour="black", fill="white") + 
+  facet_wrap(~variable) +
+  xlab("Emissions in log_10(million tonnes (Tg))") +
+  scale_x_log10()
+
+p3 <- ggplot(melt(can[,pm]),aes(x=value/1e6)) + 
+  geom_histogram(binwidth=0.5, colour="black", fill="white") + 
+  facet_wrap(~variable) +
+  xlab("Emissions in sqrt(million tonnes (Tg))") +
+  scale_x_sqrt()
+
+grid.arrange(p1, p3, p2, ncol = 1)
+
+summary(can[,pm])
+```
+
+The histograms show the distribution of particulate matter pollution from all individual sources from 2009 to 2014 is not normal. Using a log_10 scale the distribution becomes slightly more normal although it is still quite skewed. Although, the distribution looks left-skewed, the summary statistics show that it is actually right-skewed (i.e. mean > median). The maximum is very high and far from both mean and median. Only later examination into sources and sectors can tell us if total pollution is being driven by a small number of large emissions (i.e. most emissions from a single source/sector) or, a large number of small emissions (i.e. emissions from many sources and sectors. 
+
+```{r CACs_Histograms, fig.height=20}
+p4 <- ggplot(melt(can[,cacs]),aes(x=value)) + 
+  geom_histogram(bins = 20, colour="black", fill="white") + 
+  facet_wrap(~variable) +
+  xlab("Emissions in tonnes (Mg)")
+
+p5 <- ggplot(melt(can[,cacs]),aes(x=value)) + 
+  geom_histogram(bins = 20, colour="black", fill="white") + 
+  facet_wrap(~variable) +
+  xlab("Emissions in sqrt(tonnes (Mg))") +
+  scale_x_sqrt()
+
+p6 <- ggplot(melt(can[,cacs]),aes(x=value)) + 
+  geom_histogram(bins = 20, colour="black", fill="white") + 
+  facet_wrap(~variable) +
+  xlab("Emissions in log_10(tonnes (Mg))") +
+  scale_x_log10()
+
+grid.arrange(p4, p5, p6, ncol=1)
+
+summary(can[,cacs])
+```
+
+The histograms show the distribution of the other CACs (SOx, NOx, VOC, CO, and NH3) from all individual sources from 2009 to 2014 is not normal. Using a log_10 scale the distribution becomes slightly more normal although it is still quite skewed. The summary statistics show the distribution is actually right-skewed (i.e. mean > median). Again, the maximum is very high and far from both mean and median. Almost all of the individual emissions quantities seem to be relatively small as almost all the data is contained within the first bin without any transformations.
+
+```{r Heavy_Metal_Histograms}
+p7 <- ggplot(melt(can[,hvymetal]),aes(x=value)) + 
+  geom_histogram(bins=10, colour="black", fill="white") + 
+  facet_wrap(~variable) +
+  xlab("Emissions in kilos (kg)")
+
+p8 <- ggplot(melt(can[,hvymetal]),aes(x=value)) + 
+  geom_histogram(bins=10, colour="black", fill="white") + 
+  facet_wrap(~variable) +
+  xlab("Emissions in sqrt(kilos (kg))") +
+  scale_x_sqrt()
+
+p9 <- ggplot(melt(can[,hvymetal]),aes(x=value)) + 
+  geom_histogram(bins=10, colour="black", fill="white") + 
+  facet_wrap(~variable) +
+  xlab("Emissions in log_10(kilos (kg)") +
+  scale_x_log10()
+
+grid.arrange(p7, p8, p9, ncol=1)
+
+summary(can[,hvymetal])
+```
+
+The histograms show the distribution of heavy metal pollution pollution from all individual sources from 2009 to 2014 is not normal. Using a log_10 scale the distribution becomes slightly more normal although it is still quite skewed. The summary statistics show the distribution is actually right-skewed (i.e. mean > median). Again, the maximum is very high and far from both mean and median. Almost all of the individual emissions quantities seem to be relatively small as almost all the data is contained within the first bin without any transformations.
+
+```{r Year_Histogram, fig.height=3}
+ggplot(canada, aes(x=Year)) +
+  geom_bar(colour="black", fill="white")
+```
+
+The variable year is discrete so a histogram would not make sense. A bar plot shows that there are equal counts of all years because same data is collected every year.
+
+```{r Source_Histogram}
+ggplot(canada, aes(x=Source)) +
+  geom_bar(colour="black", fill="white") + 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+
+Source is also a discrete variable. There are different numbers of emission points from each type of source. We can see that there are the most number of industrial sources and least number of non-industrial and incineration sources. Mobile, miscellaneous, and open sources have the second, third, and fourth most number of emitters. 
+
+```{r Sector_Histogram}
+ggplot(canada, aes(x=Sector)) +
+  geom_bar(colour="black", fill="white") + 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1, 
+                                   size = 7))
+```
+
+Sector is again, a discrete variable. The bar plot shows that there are equal counts for every sector because the every sector has emission data collected every year. 
+
+## Univariate Analysis
+
+### What is the structure of your dataset?
+There are 47625 observations of 19 variables. Variables in dataset:
+```{r}
+names(apei)
+```
+
+All sources:
+```{r}
+levels(apei$Source)
+```
+
+All sectors:
+```{r}
+levels(apei$Sector)
+```
+
+The APEI collects information about the following pollutants: 
+
+* Criteria air contaminants (CACs) i.e. smog precursors:
+    + Total particulate matter (TPM) with upper size limit of ~100 microns in aerodynamic equivalent diameter
+    + Particulate matter less than or equal to 10 microns (PM10)
+    + Particulate matter less than or equal to 2.5 microns (PM2.5)
+    + Sulphur oxides (SOx) 
+    + Nitrogen oxides (NOx) 
+    + Volatile organic compounds (VOCs) 
+    + Carbon monoxide (CO) 
+    + Ammonia (NH3) 
+* Heavy metals: 
+    + Mercury (Hg) 
+    + Lead (Pb) 
+    + Cadmium (Cd) 
+* Persistent organic pollutants (POPs): 
+    + Dioxins and furans (D/F) 
+    + Four polycyclic aromatic hydrocarbons (PAHs) compounds (Benzo[a]pyrene, Benzo[b]fluoranthene, Benzo[k]fluoranthene and Indeno[1,2,3-cd]pyrene) 
+    + Hexachlorobenzene (HCB) 
+
+### What are the main features of interest in your dataset?
+The main features of interest are total emissions of each of the 14 pollutants within Canada. I would like to investigate trends - whether or not emissions have increased or decreased - and if they have increased, why? 
+
+### What other features in the dataset do you think will help support your investigation into your features of interest?
+I will use the region, source, and sector features to further investigate the pollutants that have seen an increase in recent years. 
+
+### Did you create any new variables from existing variables in the dataset?
+I did not create any new variables - save for the region variable which I added while combining all data in Python script. 
+
+### Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+I did most of the data processing with Python prior to loading the data in R. I did subset the data to only look at Canada and all emission sources and sectors. I then aggregated the data by year to get the total emissions of a pollutant from all sources and sectors for a given year. I did this because there are simply too many data points to understand in a plot without using a summary statistic - such as sums.
+
+# Bivariate Plots Section
+```{r PM_Time_Series}
+par(mar=c(6, 4, 1, 1), bty="o", mfrow=c(1, 3), oma=c(0,0,2,0))
+#TPM 
+tpm <- subset(canada, !is.na(TPM))
+tpm <- aggregate(tpm$TPM, list(Year = tpm$Year), sum)
+tpm$x <- tpm$x/1000000
+plot(tpm, type = 'l', 
+     ylab="TPM in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+
+#PM10
+pm10 <- subset(canada, !is.na(PM10))
+pm10 <- aggregate(pm10$PM10, list(Year = pm10$Year), sum)
+pm10$x <- pm10$x/1000000
+
+plot(pm10, type = 'l',
+     ylab="PM10 in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+
+#PM2.5
+pm25 <- subset(canada, !is.na(PM2.5))
+pm25 <- aggregate(pm25$PM2.5, list(Year = pm25$Year), sum)
+pm25$x <- pm25$x/1000000
+
+plot(pm25, type = 'l',
+     ylab="PM2.5 in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+
+title("TPM, PM10, and PM2.5 emitted in Canada from 1990 to 2014", 
+      outer=TRUE)
+
+```
+
+Emissions of all PM steadily decreased from 1990 to 2005 but then increased from 2005 to 2014.
+
+```{r SOx_Time_Series}
+par(mar=c(5, 4, 1, 1), bty="o", mfrow=c(2, 3), oma=c(0,0,2,0))
+
+#SOx
+sox <- subset(canada, !is.na(SOX))
+sox <- aggregate(sox$SOX, list(Year = sox$Year), sum)
+sox$x <- sox$x/1000000
+
+plot(sox, type = 'l', 
+     ylab="SOx in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+
+#NOx
+nox <- subset(canada, !is.na(NOX))
+nox <- aggregate(nox$NOX, list(Year = nox$Year), sum)
+nox$x <- nox$x/1000000
+
+plot(nox, type = 'l', 
+     ylab="NOx in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+
+#VOC
+voc <- subset(canada, !is.na(VOC))
+voc <- aggregate(voc$VOC, list(Year = voc$Year), sum)
+voc$x <- voc$x/1000000
+
+plot(voc, type = 'l', ylab="VOC in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+
+#CO
+co <- subset(canada, !is.na(CO))
+co <- aggregate(co$CO, list(Year = co$Year), sum)
+co$x <- co$x/1000000
+
+plot(co, type = 'l', 
+     ylab="CO in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+
+#NH3
+nh3 <- subset(canada, !is.na(NH3))
+nh3 <- aggregate(nh3$NH3, list(Year = nh3$Year), sum)
+nh3$x <- nh3$x/1000000
+
+plot(nh3, type = 'l', 
+     ylab="NH3 in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+
+title("Other CACs emitted in Canada from 1990 to 2014", 
+      outer=TRUE)
+```
+
+Overall SOx emissions decreased by 63% (2.0 Mt) between 1990 and 2014.
+
+```{r NOx_Time_series}
+#NOx
+nox <- subset(canada, !is.na(NOX))
+nox <- aggregate(nox$NOX, list(Year = nox$Year), sum)
+nox$x <- nox$x/1000000
+
+plot(nox, type = 'l', main="Nitrogen oxides emitted in Canada from 1990 to 2014", 
+     ylab="NOx in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+```
+
+From 1990 to 2014, national NOx emissions decreased by 33% (900 kt).
+
+```{r VOC_Time_Series}
+#VOC
+voc <- subset(canada, !is.na(VOC))
+voc <- aggregate(voc$VOC, list(Year = voc$Year), sum)
+voc$x <- voc$x/1000000
+
+plot(voc, type = 'l', main="Volatile organic compounds emitted in Canada from 1990 to 2014", ylab="VOC in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+```
+
+Between 1990 and 2014, VOC emissions decreased by 50% (2.1 Mt).
+
+```{r CO_Time_Series}
+#CO
+co <- subset(canada, !is.na(CO))
+co <- aggregate(co$CO, list(Year = co$Year), sum)
+co$x <- co$x/1000000
+
+plot(co, type = 'l', main="Carbon monoxide emitted in Canada from 1990 to 2014", 
+     ylab="CO in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+```
+
+Between 1990 and 2014, CO emissions decreased by 62% (10 Mt).
+
+```{r NH3_Time_Series}
+#NH3
+nh3 <- subset(canada, !is.na(NH3))
+nh3 <- aggregate(nh3$NH3, list(Year = nh3$Year), sum)
+nh3$x <- nh3$x/1000000
+
+plot(nh3, type = 'l', main="Ammonia emitted in Canada from 1990 to 2014", 
+     ylab="NH3 in million tonnes (Tg)", las = 1, cex.axis=0.8, cex.main=1)
+
+```
+
+From 1990 to 2014, Canada's NH3 emissions increased by 21% (84 kt).
+
+```{r Lead_Time_Series}
+par(mar=c(6, 4, 1, 1), bty="o", mfrow=c(1, 3), oma=c(0,0,2,0))
+
+#Pb
+pb <- subset(canada, !is.na(Pb))
+pb <- aggregate(pb$Pb, list(Year = pb$Year), sum)
+pb$x <- pb$x/1000
+
+plot(pb, type = 'l', 
+     ylab="Pb in tonnes (Mg)", las = 1, cex.axis=0.8, cex.main=1)
+#Cd
+cd <- subset(canada, !is.na(Cd))
+cd <- aggregate(cd$Cd, list(Year = cd$Year), sum)
+cd$x <- cd$x/1000
+
+plot(cd, type = 'l', 
+     ylab="Cd in tonnes (Mg)", las = 1, cex.axis=0.8, cex.main=1)
+
+#Hg
+hg <- subset(canada, !is.na(Hg))
+hg <- aggregate(hg$Hg, list(Year = hg$Year), sum)
+hg$x <- hg$x/1000
+
+plot(hg, type = 'l', 
+     ylab="Hg in tonnes (Mg)", las = 1, cex.axis=0.8, cex.main=1)
+
+title("Heavy metal emissions in Canada from 1990 to 2014", 
+      outer=TRUE)
+```
+
+Pb emissions decreased by 89% (1.2 kt) from 1990 to 2014.
+
+```{r Cd_Time_Series}
+#Cd
+cd <- subset(canada, !is.na(Cd))
+cd <- aggregate(cd$Cd, list(Year = cd$Year), sum)
+cd$x <- cd$x/1000
+
+plot(cd, type = 'l', main="Cadmium emitted in Canada from 1990 to 2014", 
+     ylab="Cd in tonnes (Mg)", las = 1, cex.axis=0.8, cex.main=1)
+```
+
+From 1990 to 2014, national Cd emissions decreased by 92% (83 t). There is an increase from 1993 to 2001 but the trend continues downward again after this.
+
+```{r Hg_Time_Series}
+#Hg
+hg <- subset(canada, !is.na(Hg))
+hg <- aggregate(hg$Hg, list(Year = hg$Year), sum)
+hg$x <- hg$x/1000
+
+plot(hg, type = 'l', main="Mercury emitted in Canada from 1990 to 2014", 
+     ylab="Hg in tonnes (Mg)", las = 1, cex.axis=0.8, cex.main=1)
+
+```
+
+Between 1990 and 2014, Hg emissions decreased by 89% (31 t).
+
+```{r D/F_Time_Series}
+par(mar=c(6, 4, 1, 1), bty="o", mfrow=c(1, 3), oma=c(0,0,2,0))
+
+
+#Dioxins and furans
+dandf <- subset(canada, !is.na(D.F))
+dandf <- aggregate(dandf$D.F, list(Year = dandf$Year), sum)
+
+plot(dandf, type = 'l', 
+     ylab="D/F in grams of toxicity equivalent (gTEQ)", las = 1, 
+     cex.axis=0.8, cex.main=1)
+#Hexachlorobenzene
+hcb <- subset(canada, !is.na(HCB))
+hcb <- aggregate(hcb$HCB, list(Year = hcb$Year), sum)
+hcb$x <- hcb$x/1000
+
+plot(hcb, type = 'l',
+     ylab="HCB in kilograms (kg)", las = 1, cex.axis=0.8, cex.main=1)
+
+#PAH
+pah <- subset(canada, !is.na(PAH))
+pah <- aggregate(pah$PAH, list(Year = pah$Year), sum)
+pah$x <- pah$x/1000
+
+plot(pah, type = 'l', 
+     ylab="PAH in tonnes (Mg)", las = 1, cex.axis=0.8, cex.main=1)
+
+title("Persistent organic pollutant emmisions in Canada from 1990 to 2014", 
+      outer=TRUE)
+```
+
+Between 1990 and 2014, D/F emissions decreased by 85% (390 gTEQ).
+
+```{r HCB_Time_Series}
+#Hexachlorobenzene
+hcb <- subset(canada, !is.na(HCB))
+hcb <- aggregate(hcb$HCB, list(Year = hcb$Year), sum)
+hcb$x <- hcb$x/1000
+
+plot(hcb, type = 'l', 
+     main="Hexachlorobenzenes emitted in Canada from 1990 to 2014", 
+     ylab="HCB in kilograms (kg)", las = 1, cex.axis=0.8, cex.main=1)
+```
+
+From 1990 to 2014, emissions of PAHs decreased by 61% (210 t).
+
+```{r PAH_Time_Series}
+#PAH
+pah <- subset(canada, !is.na(PAH))
+pah <- aggregate(pah$PAH, list(Year = pah$Year), sum)
+pah$x <- pah$x/1000
+
+plot(pah, type = 'l', 
+     main="Polycyclic aromatic hydrocarbons emitted in Canada from 1990 to 2014", 
+     ylab="PAH in tonnes (Mg)", las = 1, cex.axis=0.8, cex.main=1)
+```
+
+Overall, a 91% (83 kg) decrease in HCB emissions occurred between 1990 and 2014.
+
+```{r Small_Multiples}
+summed.can <- data.frame(cd$Year, tpm$x, pm10$x, pm25$x, sox$x, nox$x,
+                         voc$x, co$x, nh3$x, pb$x, cd$x, hg$x, dandf$x, 
+                         hcb$x, pah$x)
+colnames(summed.can) <- c("Year", pollutants)
+
+par(mfrow=c(4,3))
+for (i in 1:length(pollutants)) {
+  plot(summed.can$Year, summed.can[,pollutants[i]], type="l",
+       main=pollutants[i], xlab="Year", ylab = "")
+}
+
+```
+
+```{r Split_small_mults}
+saveGIF({
+  for (i in 1:length(summed.can$Year)) {
+    par(mfrow=c(3=1,3))
+    for (j in 1:length(pm)) {
+      plot(food$year[1:i], food[1:i,pm[j]], 
+           type="l", main=meat_columns[j], xlab="Year", 
+           ylab = "Million tonnes (Tg)", xlim=c(1990,2015), ylim=c(0,3))
+    }
+  }
+}, movie.name = "PM-multiples.gif", interval=0.15, nmax=100, ani.width=650, ani.height=600)
+
+
+
+par(mfrow=c(1,3))
+for (i in 1:length(pm)) {
+  plot(summed.can$Year, summed.can[,pm[i]], type="l",
+       main=pm[i], xlab="Year", ylab = "Million tonnes (Tg)")
+}
+
+par(mfrow=c(2,3))
+for (i in 1:length(cacs)) {
+  plot(summed.can$Year, summed.can[,cacs[i]], type="l",
+       main=cacs[i], xlab="Year", ylab = "Tonnes (Mg)")
+}
+
+par(mfrow=c(1,3))
+for (i in 1:length(hvymetal)) {
+  plot(summed.can$Year, summed.can[,hvymetal[i]], type="l",
+       main=hvymetal[i], xlab="Year", ylab = "Tonnes (Mg)")
+}
+
+```
+
+```{r Bivariate_Correlations}
+par(mar=c(5, 2, 5, 2), bty="o")
+plot(summed.can[,pm], main = "Particulate matter")
+```
+
+Using Pearson's product moment correlation to calculate the correlations between TPM, PM10, and PM2.5 we see that the correlation between TPM and PM10 is the strongest.
+
+```{r}
+cor.test(summed.can$TPM, summed.can$PM10)
+cor.test(summed.can$PM10, summed.can$PM2.5)
+cor.test(summed.can$TPM, summed.can$PM2.5)
+```
+
+```{r}
+plot(summed.can[,cacs], main = "Other CACs/smog precursors")
+```
+
+Most of the other CACs: SOx, NOx, VOC, and CO all seem to be correlated, although the correlation between VOC and CO is the strongest. Ammonia emissions (NH3) do not seem to be correlated with any of the smog precursor pollutants. 
+
+```{r}
+plot(summed.can[,hvymetal], main = "Heavy metals")
+```
+
+The heavy metals seem to have some correlation but not any strong correlations. 
+
+```{r}
+plot(summed.can[,pops], main = "Persistent organic pollutants")
+```
+
+The persistent organic pollutants dioxins and furans (D.F) appear to be correlated with HCBs. PAH does not seem to be correlated with the other two POPs. 
+
+
+# Bivariate Analysis
+
+
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+In general, all 14 pollutants have decreased over the last 25 years except for particulate matter and ammonia. There was a significant increase in Cd from around 1993 to 2002. I will investigate these four pollutants further in the multivariate analysis portion. 
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+I just looked at the contributing sources for the four pollutants (TPM, PM10, PM2.5, and NH3) that have increased over time. I only plotted the distributions for 1990 and 2014 and it appears that the distribution between sources didn't change much over time. Open sources are by far the most significant contributing source for particulate matter pollutants as well as ammonia. 
+
+### What was the strongest relationship you found?
+The correlation between TPM and PM10 was strongest with Pearson's product-moment correlation of 0.99.
+
+# Multivariate Plots Section
+
+```{r PM_Source_Distributions fig.height=12}
+#### Distributions by source
+## Particulate matter
+canadapm14 <- canada[canada$Year==2014,c(2,4,5,6)]
+canadapm14 <- canadapm14[complete.cases(canadapm14),]
+canadapm90 <- canada[canada$Year==1990,c(2,4,5,6)]
+canadapm90 <- canadapm90[complete.cases(canadapm90),]
+
+options(scipen=-10)
+
+#TPM
+par(mfrow=c(3,2), mar=c(7, 4.2, 1, 1), las=1, bty="n",
+    mgp=c(3.3,1,0))
+can90tpm <- aggregate(canadapm90$TPM, 
+                      list(Source = canadapm90$Source), sum)
+barplot(can90tpm$x, names.arg=can90tpm$Source, 
+        cex.axis=0.8, cex.names=1, cex.main=1, las=2, 
+        main = "TPM in 1990 by source",
+        ylab = "TPM in tonnes (Mg)", ylim = c(0, 2.5e+07))
+
+can14tpm <- aggregate(canadapm14$TPM, 
+                      list(Source = canadapm14$Source), sum)
+barplot(can14tpm$x, names.arg=can14tpm$Source, 
+        cex.axis=0.7, cex.names=1, cex.main=1, las=2, 
+        main = "TPM in 2014 by source",
+        ylab = "TPM in tonnes (Mg)")
+
+#PM10
+can90pm10 <- aggregate(canadapm90$PM10, 
+                       list(Source = canadapm90$Source), sum)
+barplot(can90pm10$x, names.arg=can90pm10$Source, 
+        cex.axis=0.7, cex.names=1, cex.main=1, las=2, 
+        main = "PM10 in 1990 by source",
+        ylab = "PM10 in tonnes (Mg)", ylim = c(0, 8e+06))
+
+can14pm10 <- aggregate(canadapm14$PM10, 
+                       list(Source = canadapm14$Source), sum)
+barplot(can14pm10$x, names.arg=can14pm10$Source, 
+        cex.axis=0.7, cex.names=1, cex.main=1, las=2, 
+        main = "PM10 in 2014 by source",
+        ylab = "PM10 in tonnes (Mg)", ylim = c(0, 8e+06))
+
+#PM2.5
+can90pm25 <- aggregate(canadapm90$PM2.5, 
+                       list(Source = canadapm90$Source), sum)
+barplot(can90pm25$x, names.arg=can90pm25$Source, 
+        cex.axis=0.7, cex.names=1, cex.main=1, las=2, 
+        main = "PM2.5 in 1990 by source",
+        ylab = "PM2.5 in tonnes (Mg)", ylim = c(0, 2e+6))
+
+can14pm25 <- aggregate(canadapm14$PM2.5, 
+                       list(Source = canadapm14$Source), sum)
+barplot(can14pm25$x, names.arg=can14pm25$Source, 
+        cex.names=1, cex.axis=0.7, cex.main=1, las=2, 
+        main = "PM2.5 in 2014 by source",
+        ylab = "PM2.5 in tonnes (Mg)", ylim = c(0, 2e+6))
+```
+
+Almost all particulate matter emissions come from open sources and this distribution does not seem to have varied greatly between 1990 and 2014. Some other sectors do not have insignificant contributions to PM2.5, but this may be because the values are much smaller overall. I will examine only open source emissions of PM more closely.
+
+```{r NH3_Source_Distribution}
+## Ammonia
+par(mfrow=c(1,2), mar=c(7, 4.2, 1, 1), las=1, bty="n",
+    mgp=c(3.3,1,0))
+
+canadanh390 <- canada[canada$Year==1990,c(2,11)]
+canadanh390 <- canadanh390[complete.cases(canadanh390),]
+canadanh390 <- aggregate(canadanh390$NH3, 
+                         list(Source = canadanh390$Source), sum)
+barplot(canadanh390$x, names.arg=canadanh390$Source, 
+        cex.names=1, cex.axis=0.7, cex.main=1, las=2, 
+        main = "Ammonia in 1990 by source",
+        ylab = "Ammonia in tonnes (Mg)", ylim = c(0, 5e+5))
+
+canadanh314 <- canada[canada$Year==2014,c(2,11)]
+canadanh314 <- canadanh314[complete.cases(canadanh314),]
+canadanh314 <- aggregate(canadanh314$NH3, 
+                         list(Source = canadanh314$Source), sum)
+barplot(canadanh314$x, names.arg=canadanh314$Source, 
+        cex.names=1, cex.axis=0.7, cex.main=1, las=2, 
+        main = "Ammonia in 2014 by source",
+        ylab = "Ammonia in tonnes (Mg)", ylim = c(0, 5e+5))
+```
+
+Most ammonia emissions also seem to come from open sources. The distribution amongst sources does not seem to have changed between 1990 and 2014. 
+
+```{r PM_Sources, fig.height=7, fig.width=15}
+openca <- subset(canada, Source=="Open")
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+theme_set(theme_grey(base_size = 18)) 
+
+ggplot(data = openca) +
+  geom_line(aes(x = Year, y = TPM, colour = Sector),
+            size = 1) +
+  scale_colour_manual(values=cbPalette) +
+  scale_x_continuous(limits = c(1990, 2014),
+                     breaks = seq(1990, 2014, 4)) +
+  ggtitle("Open source TPM (sqrt) by sector") +
+  scale_y_sqrt()
+
+ggplot(data = openca) +
+  geom_line(aes(x = Year, y = PM10, colour = Sector),
+            size = 1) + 
+  scale_colour_manual(values=cbPalette) +
+  scale_x_continuous(limits = c(1990, 2014),
+                     breaks = seq(1990, 2014, 4)) +
+  ggtitle("Open source PM10 (sqrt) by sector") +
+  scale_y_sqrt()
+
+ggplot(data = openca) +
+  geom_line(aes(x = Year, y = PM2.5, colour = Sector),
+            size = 1) +
+  scale_colour_manual(values=cbPalette) +
+  scale_x_continuous(limits = c(1990, 2014),
+                     breaks = seq(1990, 2014, 4)) +
+  ggtitle("Open source PM2.5 (sqrt) by sector") +
+  scale_y_sqrt()
+```
+
+The increase in emissions from 2005 to 2014 is driven by emissions from construction operations, combined with the steady increase in dust from roads since the mid-1990s. However, these increases are offset by consistent emission decreases throughout the time series from agriculture, prescribed burning,and other sectors.
+
+```{r NH3_Sources, fig.height=7, fig.width=15}
+ggplot(data = openca) +
+  geom_line(aes(x = Year, y = NH3, colour = Sector),
+            size = 1) +
+  scale_colour_manual(values=cbPalette) +
+  scale_x_continuous(limits = c(1990, 2014),
+                     breaks = seq(1990, 2014, 4)) +
+  ggtitle("Open source ammonia (sqrt) by sector") +
+  scale_y_sqrt()
+```
+
+The increasing trend in NH3 emissions appears to be almost entirely driven by the agricultural sector. Primary sources of NH3 in agriculture are from animal production and fertilizer.
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+Overall, dust from unpaved roads (emissions resulting from the re-suspension of particulate matter by vehicles travelling on unpaved roads) are by far the greatest contributor to TPM and the emissions have mostly increased steadily over the past 15 years.
+
+Soil disturbance on construction sites is the second greatest contributor to PM emission in recent years. There is an interesting plummet from 1997-1998 and then a large increase from 2005-2006. I'm not sure what happened during these period in time because Canada's GDP from construction increased continually throughout 1997-2014. 
+
+Dust from paved roads (emissions resulting from the re-suspension of particulate matter by vehicles travelling on unpaved roads) surpassed emissions from agriculture last year to be the third largest contributor to TPM and has also been steadily increasing over the past 15 years.
+
+The increasing trend in NH3 emissions appears to be almost entirely driven by the agricultural sector. Primary sources of NH3 in agriculture are from animal production and fertilizer.
+
+### Were there any interesting or surprising interactions between features?
+Open source emissions of TPM from agriculture has strangely declined steadily. This is interesting because Canada's GDP from agriculture has mostly increased during this time. The decline may be from better farming technology or maybe some sort of error in how the data is collected or reported.  
+
+Another interesting point of interest is how insignificant the contributions from mine tailings are, even with the recent increased development of resource extraction industries in Alberta. The true cost, from a pollution point of view, of the increased industrial activity in Alberta is probably captured in particulate matter pollution due to construction and dust from increased road usage (especially unpaved).
+
+------
+
+# Final Plots and Summary
+All 14 pollutants that are reported in the APEI have decreased over time - save for particulate matter and ammonia. Of all particulate matter pollution, PM2.5 is especially hazardous to health due to its small size and potential to infiltrate the alveoli in the lungs. Ammonia is very harmful to the environment and can also be hazardous to health if particle size falls within PM2.5 category. 
+
+### Plot One
+```{r Plot_One, fig.height=10, fig.width=15}
+par(mar=c(2, 6, 2, 2), mfrow=c(2,1), bty="o")
+#PM2.5
+plot(pm25, type = 'l', 
+     main="PM2.5 and NH3 emitted in Canada from 1990 to 2014", 
+     ylab="PM2.5 in million tonnes", 
+     las = 1, cex.axis=1, cex.main=1.3, xlim=c(1990,2015))
+
+#Ammonia
+plot(nh3, type = 'l', 
+     ylab="NH3 in million tonnes", 
+     las = 1, cex.axis=1, cex.main=1.3, xlim=c(1990,2015))
+```
+
+### Description One
+From 1990 to 2014, Canada's NH3 emissions increased by 21% (84 kt). Emissions of PM2.5 steadily decreased from 1990 to 2005 and then increased.
+
+### Plot Two
+```{r Plot_Two, fig.height=7, fig.width=15}
+par(mfrow=c(1,2), mar=c(5, 7, 1, 1), las=1, bty="n",
+    oma=c(0,0,2,0))
+#PM2.5
+can14pm25.o <- can14pm25[order(can14pm25$x),]
+barplot(can14pm25.o$x, names.arg=can14pm25.o$Source, 
+        horiz = TRUE,
+        xlab = "PM2.5 emissions in tonnes")
+#Ammonia
+canadanh314.o <- canadanh314[order(canadanh314$x),]
+barplot(canadanh314.o$x, names.arg=canadanh314.o$Source, 
+        horiz = TRUE,
+        xlab = "NH3 emissions in tonnes")
+
+title("PM2.5 and NH3 emitted in Canada in 2014 by source", 
+      outer=TRUE)
+```
+
+### Description Two
+The main source of both PM2.5 and ammonia emissions is from open sources. Open sources accounted for 84% (1.5 Mt) of total PM2.5 emissions and 94% (460 kt) of total ammonia emissions.
+
+### Plot Three
+```{r Plot_Three, fig.height=12, fig.width=15}
+#PM2.5
+p1 <- ggplot(data = openca) +
+  geom_line(aes(x = Year, y = PM2.5, colour = Sector),
+            size = 1) +
+  scale_colour_manual(values=cbPalette) +
+  scale_x_continuous(limits = c(1990, 2014),
+                     breaks = seq(1990, 2014, 4)) +
+  ylab("sqrt(PM2.5 emissions in tonnes)") +
+  scale_y_sqrt()
+
+#Ammonia
+p2 <- ggplot(data = openca) +
+  geom_line(aes(x = Year, y = NH3, colour = Sector),
+            size = 1) +
+  scale_colour_manual(values=cbPalette) +
+  scale_x_continuous(limits = c(1990, 2014),
+                     breaks = seq(1990, 2014, 4)) +
+  scale_y_sqrt("sqrt(NH3 emissions in tonnes)")
+
+grid.arrange(p1, p2, ncol = 1, 
+ top = textGrob("Open source PM2.5 and NH3 emissions (sqrt) by sector",
+                gp=gpar(fontsize=18)))
+```
+
+### Description Three
+PM2.5 emissions decreased in all in all sectors except for dust from paved and unpaved roads. The increase in emissions from 2005 to 2014 is driven by emissions from construction operations, combined with the steady increase in dust from roads since the mid-1990s. 
+
+The increase in ammonia emissions is almost entirely driven by emissions from animal production and fertilizer application within the agriculture sector. Animal production, which dominates the emissions throughout the time series, experienced a steady increase in emissions from 1990 to 2005, followed by a decrease from 2006 to 2014. Emissions from fertilizer application, however, have been rapidly increasing since 2006, due to an increase in consumption of synthetic nitrogen fertilizers.
+
+------
+
+# Reflection
+I did some data wrangling beforehand in Python. The data was only available for download as individual CSV files for each year and each geographical area (~330 files). I wrote a script (mush.py) to combine all regional CSVs, as well as remove unwanted French and unit columns. I then combined all the regional files using mastermush.py into one giant dataset.
+
+Because I combined so many individual reports, there was a lot of data to examine in the overall dataset and I didn't look at it from every angle. In retrospect, I probably didn't need the regional data for now because I didn't get around to looking at individual regions.
+
+I first explored Canada-wide data because I wanted to begin with general scope and narrow it down later. I first looked at the trends of all pollutants over time and then focused on the ones which increased (i.e. PM and NH3). Then, I looked more closely at the sectors and sources which contributed to the increase of those pollutants.
+
+In the future I would like to explore the data in different regions. I would also like to examine the pollutants that decreased over time in addition to the ones that increased. It would be interesting to try and match significant increases or decreases with any legislation that was introduced around the time. 

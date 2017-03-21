@@ -1,0 +1,84 @@
+Source-EN,Sector-EN,Description-EN
+Industrial Source,Aluminium Industry,"Emissions resulting from:
+- Alumina production through bauxite refining 
+- Primary aluminium production through smelting and refining
+- Secondary aluminium production in which aluminium is recovered from aluminium-containing scrap"
+Industrial Source,Asphalt Paving Industry,Emissions released during asphalt concrete (or hot-mix asphalt) manufacturing. Emissions are from permanent and portable hot-mix asphalt installations.
+Industrial Source,Cement and Concrete Industry,"Emissions resulting from:
+- The entire process of cement production in rotary kilns
+- The preparation of concrete and ready-mix concrete
+- Lime manufacture 
+- Concrete batching and products"
+Industrial Source,Chemicals Industry,"Emissions resulting from a large number of different product industries including fertilizer manufacturing, plastic resins, paints and varnishes, petrochemicals and inorganic chemicals. The raw materials, processes used and products produced are in many cases unique to individual plants."
+Industrial Source,Mineral Products Industry,"Emissions resulting from the manufacture of brick and related clay products such as pipes, liner and tiles"
+Industrial Source,Foundries,"Emissions from facilities that produce castings of various types of ferro-alloys as well as small iron and steel foundries not associated with integrated iron and steel facilities. The types of foundries included are: open ferrous, electric arc and induction foundries."
+Industrial Source,Grain Industries,"Emissions produced by: primary, process, terminal and transfer elevators, as well as manufacturing or processing grain for use in other products"
+Industrial Source,Iron and Steel Industries,"Emissions from steel production, including blast furnaces, basic oxygen furnaces, electric arc furnaces, sintering, direct reduction of iron, hot forming and semi-finishing, coke production"
+Industrial Source,Iron Ore Mining Industry,"Emissions resulting from iron ore mining, beneficiation by concentration and sintering into pellets are included."
+Industrial Source,Mining and Rock Quarrying,"Emissions from overburden removal, drilling in rock, blasting, crushing of rock, loading of materials, transporting raw materials by conveyors or haulage trucks, scraping, bulldozing, grading, open storage pile losses and wind erosion from exposed areas "
+Industrial Source,Non-Ferrous Smelting and Refining Industry,"Emissions resulting from:
+- Primary copper and nickel production using pyrometallurgical operations
+- Lead ore crushing, concentrating and metallurgic processing 
+- Zinc metal production through electrolytic processes "
+Industrial Source,Pulp and Paper Industry,"Emissions from chemical, mechanical, recycling and semi-chemical mills, including the production of energy through the combustion of spent pulping liquor, biomass and fossil-fuel combustion. Also includes fugitive emissions from wood refining, screening and drying, and various steps in chemical recovery systems."
+Industrial Source,Wood Industry,"Emissions from:
+- Sawmills 
+- Panel board mills (including veneer, plywood, waferboard, particle board and medium-density fiberboard mills) 
+- Other wood products (including furniture and cabinet makers, wood treating plants, wood pellet mills and Masonite manufacturers)"
+Industrial Source,Upstream Petroleum Industry,"Emissions from drilling, testing and servicing of wells, conventional oil and gas production, in situ and open pit mining, oil sands production, natural gas processing, crude oil transmission."
+Industrial Source,Downstream Petroleum Industry,Emissions from the refining and processing of crude oil to make fuels or other products such as solvents or asphalt
+Industrial Source,Petroleum Product Transportation and Distribution,"Emissions from the distribution of fuels from refineries. Includes pipelines, terminals (large distribution facilities), bulk plants (smaller distribution facilities) and natural gas transmission, distribution and storage facilities."
+Industrial Source,Other Industries,"Emissions resulting from manufacturing, food production or processing industries that are not included under a specific industrial sector"
+Industrial Source,Biofuel Production,Emissions from the production of ethanol for fuel or oils for biodiesel
+Non-Industrial Source,Commercial Fuel Combustion,"Emissions resulting primarily from external combustion sources used for space/water heating in commercial establishments, health and educational institutions and government/public administration facilities"
+Non-Industrial Source,Electric Power Generation (Utilities),Electric power generation includes electrical power produced by utilities and by industry for commercial sale and/or private use.
+Non-Industrial Source,Residential Fuel Combustion,Emissions resulting primarily from combustion of fossil fuels used for space/water heating in residences
+Non-Industrial Source,Residential Fuel Wood Combustion,"Emissions from burning of fuel wood and pellets for space heating and hot water. Includes emissions from fireplaces, wood stoves and wood-fired boilers."
+Mobile Source,Air Transportation,"Emissions from piston and turbine military, commercial and general aviation (landing and take-off only), and in-flight (cruise) emissions for turbine aircraft"
+Mobile Source,Heavy-duty Diesel Vehicles,Emissions from diesel vehicles over 3856 kilograms
+Mobile Source,Heavy-duty Gasoline Trucks,Emissions from gasoline trucks over 3856 kilograms
+Mobile Source,Light-duty Diesel Trucks,Emissions from diesel trucks under 3856 kilograms
+Mobile Source,Light-duty Diesel Vehicles,Emissions from diesel vehicles under 3856 kilograms
+Mobile Source,Light-duty Gasoline Trucks,Emissions from gasoline trucks under 3856 kilograms
+Mobile Source,Light-duty Gasoline Vehicles,Emissions from gasoline vehicles under 3856 kilograms
+Mobile Source,Marine Transportation,"Emissions from marine craft in anchored, berth and underway phases"
+Mobile Source,Motorcycles,Emissions from motorcycles
+Mobile Source,Off-road Use of Diesel,"Emissions from off-road vehicles using diesel fuel in mining, construction, agriculture, commercial purposes, logging, railway maintenance, airport ground support, and lawn and garden equipment, along with recreational vehicles."
+Mobile Source,Off-road Use of Gasoline/LPG/CNG,"Emissions from off-road vehicles using gasoline, liquid petroleum gas, and compressed natural gas in mining, construction, agriculture, commercial purposes, logging, railway maintenance, airport ground support, and lawn and garden equipment., along with recreational vehicles."
+Mobile Source,Rail Transportation,"Emissions from freight and passenger trains, including yard switching activities"
+Mobile Source,Tire Wear & Brake Lining,Emissions released from tire and brake lining wear from all categories of road transportation
+Incineration Source,Crematorium,Emissions resulting from the combustion of caskets and bodies
+Incineration Source,Industrial & Commercial Incineration,"Emissions resulting from the incineration of waste from industrial, commercial and institutional facilities. The incineration of wood waste is included in other sectors such as pulp and paper, the wood industry and power generation, where it is burned.  "
+Incineration Source,Municipal Incineration,Emissions released from incinerators used to combust municipal solid waste and recover energy
+Incineration Source,Other Incineration & Utilities,Emissions from sewage sludge incineration and other small incinerators
+Miscellaneous Source,Cigarette Smoking,"Emissions resulting from:
+- Mainstream cigarette smoke, which is directly exhaled by the smoker
+- Sidestream smoke, which is directly released from burning cigarettes "
+Miscellaneous Source,Dry Cleaning,Emissions from companies that provide dry cleaning of fabric and leather items
+Miscellaneous Source,General Solvent Use,"Emissions resulting from a broad range of applications occurring in residential, commercial, industrial and institutional locations. Industrial applications include uses such as: degreasing, adhesives and sealants, aerosols, blowing agents, and resin manufacturing. The use of consumer and commercial products, pesticides and personal care products are also included."
+Miscellaneous Source,Marine Cargo Handling Industry,"Fugitive emissions produced by the handling, loading and unloading of materials, goods and merchandise from ships to docks"
+Miscellaneous Source,Meat Cooking,"Emissions resulting from the frying and charbroiling of meat, fish and poultry in commercial and residential locations"
+Miscellaneous Source,Refined Petroleum Products Retail,Fugitive VOC emissions resulting from fuel transfers and storage at service stations
+Miscellaneous Source,Printing,"Emissions from the manufacturing or use of printing inks, which includes: flexographic, gravure, letterpress, lithographic and other printing"
+Miscellaneous Source,Structural Fires,Emissions from vehicle fires (including trains and airplanes) and fires that burn buildings
+Miscellaneous Source,Surface Coatings,"Emissions from a broad range of applications and industries, including individuals and companies engaged in the manufacturing or use of paints and coatings"
+Miscellaneous Source,Human,"Emissions from human respiration, perspiration and dental amalgams"
+Miscellaneous Source,Other Miscellaneous Sources,Emissions resulting from infant-diapered waste and point source emissions from sectors that are not included elsewhere 
+Open Source,Agriculture,"Emissions from agricultural operations and facilities, including:
+- The volatilization of ammonia from nitrogen in manure, including: animal housing, storage, and application of manure to the field
+- Ammonia emissions from the application of synthetic nitrogen fertilizers for annual and perennial crop production and non-agricultural use
+- Particulate matter from wind erosion and mechanical disturbances, such as seeding, and tillage operations, crop harvesting and livestock operations
+- Stationary combustion sources in agricultural facilities such as space and water heating and crop drying
+"
+Open Source,Construction Operations,"Emissions resulting from soil disturbance on construction sites (residential, industrial-commercial-institutional (ICI), engineering)."
+Open Source,Dust from Paved Roads,Emissions resulting from the re-suspension of particulate matter by vehicles travelling on paved roads
+Open Source,Dust from Unpaved Roads,Emissions resulting from the re-suspension of particulate matter by vehicles travelling on unpaved roads
+Open Source,Dust from Coal Transportation,Emissions resulting from the transportation of coal by train or truck
+Open Source,Waste,"Emissions from disposal sites used for a variety of wastes, such as domestic, commercial, hazardous, liquid and non-hazardous solid industrial wastes as well as sewage sludge, and from on-site burning of residential waste materials in backyard barrels or open-pit burning."
+Open Source,Mine Tailings,Emissions resulting primarily from wind erosion at mine tailings ponds located on active and inactive mine sites
+Open Source,Prescribed Burning,"Emissions from controlled fires used for land management treatments such as:
+- Reducing logging residues
+- Managing forest production
+- Controlling insects
+- Minimizing the potential for destructive wildfires
+Excludes the burning of agricultural residues."

@@ -1,0 +1,16 @@
+UNITS
+Keep in mind all the values are metric a tonne/metric ton is equal to 1000kg and differs from both the US short ton and the imperial/long ton
+* TPM - tonnes
+* PM10 - tonnes
+* PM2.5 - tonnes
+* SOX - tonnes
+* NOX - tonnes
+* VOC - tonnes
+* CO - tonnes
+* NH3 - tonnes
+* Pb - kg
+* Cd - kg
+* Hg - kg
+* D/F - gTEQ
+* HCB - g
+* PAH - kg
